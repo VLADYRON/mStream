@@ -1,0 +1,369 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MainWindow renders to snapshot 1`] = `
+<div
+  className="window stop selected draggable loading"
+  id="main-window"
+  onDragEnter={[Function]}
+  onDragOver={[Function]}
+  onDrop={[Function]}
+  onMouseDown={[Function]}
+>
+  <div
+    className="selected title-bard draggable"
+    id="title-bar"
+  >
+    <div
+      id="option-context"
+    >
+      <div
+        className="handle"
+        onClick={[Function]}
+        style={
+          Object {
+            "height": "100%",
+            "width": "100%",
+          }
+        }
+      >
+        <div
+          id="option"
+          title="Winamp Menu"
+        />
+      </div>
+    </div>
+    <div
+      id="minimize"
+    />
+    <div
+      id="shade"
+      onClick={[Function]}
+      title="Toggle Windowshade Mode"
+    />
+    <div
+      id="close"
+      onClick={[Function]}
+      title="Close"
+    />
+  </div>
+  <div
+    className="status"
+  >
+    <div
+      id="clutter-bar"
+    >
+      <div
+        id="button-o"
+      />
+      <div
+        id="button-a"
+      />
+      <div
+        id="button-i"
+      />
+      <div
+        className=""
+        id="button-d"
+        onMouseDown={[Function]}
+        onMouseUp={[Function]}
+        title="Toggle Doublesize Mode"
+      />
+      <div
+        id="button-v"
+      />
+    </div>
+    <div
+      id="play-pause"
+    />
+    <div
+      className=""
+      id="work-indicator"
+    />
+    <div
+      className="countdown"
+      id="time"
+      onClick={[Function]}
+    >
+      <div
+        className="digit digit-0"
+        id="minute-first-digit"
+      />
+      <div
+        className="digit digit-0"
+        id="minute-second-digit"
+      />
+      <div
+        className="digit digit-0"
+        id="second-first-digit"
+      />
+      <div
+        className="digit digit-0"
+        id="second-second-digit"
+      />
+    </div>
+    <canvas
+      height="32"
+      id="visualizer"
+      onClick={[Function]}
+      width="152"
+    />
+  </div>
+  <div
+    className="media-info"
+  >
+    <div
+      className="text"
+      id="marquee"
+      onMouseDown={[Function]}
+      title="Song Title"
+    >
+      <div
+        style={
+          Object {
+            "marginLeft": "0px",
+          }
+        }
+      >
+        <div
+          className=" character character-119"
+        >
+          W
+        </div>
+        <div
+          className=" character character-105"
+        >
+          i
+        </div>
+        <div
+          className=" character character-110"
+        >
+          n
+        </div>
+        <div
+          className=" character character-97"
+        >
+          a
+        </div>
+        <div
+          className=" character character-109"
+        >
+          m
+        </div>
+        <div
+          className=" character character-112"
+        >
+          p
+        </div>
+        <div
+          className=" character character-32"
+        >
+           
+        </div>
+        <div
+          className=" character character-50"
+        >
+          2
+        </div>
+        <div
+          className=" character character-46"
+        >
+          .
+        </div>
+        <div
+          className=" character character-57"
+        >
+          9
+        </div>
+        <div
+          className=" character character-49"
+        >
+          1
+        </div>
+        ;
+      </div>
+    </div>
+    <div
+      id="kbps"
+    >
+      <div
+        className=" character character-110"
+      >
+        n
+      </div>
+      <div
+        className=" character character-117"
+      >
+        u
+      </div>
+      <div
+        className=" character character-108"
+      >
+        l
+      </div>
+      <div
+        className=" character character-108"
+      >
+        l
+      </div>
+      ;
+    </div>
+    <div
+      id="khz"
+    >
+      <div
+        className=" character character-110"
+      >
+        n
+      </div>
+      <div
+        className=" character character-117"
+      >
+        u
+      </div>
+      <div
+        className=" character character-108"
+      >
+        l
+      </div>
+      <div
+        className=" character character-108"
+      >
+        l
+      </div>
+      ;
+    </div>
+    <div
+      className="mono-stereo"
+    >
+      <div
+        className=""
+        id="stereo"
+      />
+      <div
+        className=""
+        id="mono"
+      />
+    </div>
+  </div>
+  <input
+    className={undefined}
+    id="volume"
+    max="100"
+    min="0"
+    onChange={[Function]}
+    onMouseDown={[Function]}
+    onMouseUp={[Function]}
+    step="1"
+    style={
+      Object {
+        "backgroundPosition": "0 -195px",
+      }
+    }
+    title="Volume Bar"
+    type="range"
+    value={50}
+  />
+  <input
+    className={undefined}
+    id="balance"
+    max="100"
+    min="-100"
+    onChange={[Function]}
+    onMouseDown={[Function]}
+    onMouseUp={[Function]}
+    step="1"
+    style={
+      Object {
+        "backgroundPosition": "0 --15px",
+      }
+    }
+    title="Panning Bar"
+    type="range"
+    value={0}
+  />
+  <div
+    className="windows"
+  >
+    <div
+      className="selected"
+      id="equalizer-button"
+      onClick={[Function]}
+      title="Toggle Graphical Equalizer"
+    />
+    <div
+      className=""
+      id="playlist-button"
+      onClick={[Function]}
+      title="Toggle Playlist Editor"
+    />
+  </div>
+  <input
+    className="left"
+    id="position"
+    max="100"
+    min="0"
+    onChange={[Function]}
+    onInput={[Function]}
+    onMouseDown={[Function]}
+    onMouseUp={[Function]}
+    step="1"
+    title="Seeking Bar"
+    type="range"
+    value={0}
+  />
+  <div
+    className="actions"
+  >
+    <div
+      id="previous"
+      title="Previous Track"
+    />
+    <div
+      id="play"
+      onClick={[Function]}
+      title="Play"
+    />
+    <div
+      id="pause"
+      onClick={[Function]}
+      title="Pause"
+    />
+    <div
+      id="stop"
+      onClick={[Function]}
+      title="Stop"
+    />
+    <div
+      id="next"
+      title="Next Track"
+    />
+  </div>
+  <div
+    id="eject"
+    onClick={[Function]}
+    title="Open File(s)"
+  />
+  <div
+    className="shuffle-repeat"
+  >
+    <div
+      className=""
+      id="shuffle"
+      onClick={[Function]}
+      title="Toggle Shuffle"
+    />
+    <div
+      className=""
+      id="repeat"
+      onClick={[Function]}
+      title="Toggle Repeat"
+    />
+  </div>
+  <a
+    href="https://github.com/captbaritone/winamp2-js"
+    id="about"
+    target="blank"
+    title="About"
+  />
+</div>
+`;
