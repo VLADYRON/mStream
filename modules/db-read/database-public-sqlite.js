@@ -11,6 +11,10 @@ function getFileType(filename){
 
 exports.getNumberOfFiles = function(username, callback){
   db.get("SELECT Count(*) FROM items WHERE user = ?;", [username], function(err, row){
+    if(err){
+      console.log('SQL ERROR!');
+      console.log(err);
+    }
     callback(row['Count(*)']);
   });
 }
@@ -54,7 +58,7 @@ exports.setup = function (mstream, dbSettings){
   db.run(playlistSql,  function() {});
 
 
-  // Finish and test this
+  // Metadata lookup
   mstream.post('/db/metadata', function (req, res){
     var relativePath = req.body.filepath;
     var fullpath = fe.join(req.user.musicDir, relativePath);
@@ -255,8 +259,7 @@ exports.setup = function (mstream, dbSettings){
         return;
       }
 
-      var returnArray = [];
-      for (let row in rows){
+      for (let row of rows){
         if(row.album){
           albums.albums.push({
             name: row.album,
@@ -280,7 +283,6 @@ exports.setup = function (mstream, dbSettings){
         return;
       }
 
-      var returnArray = [];
       for (var i = 0; i < rows.length; i++) {
         if(rows[i].album){
            albums.albums.push({

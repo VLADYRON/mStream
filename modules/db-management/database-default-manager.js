@@ -10,12 +10,7 @@
 //    "albumArtDir": "/album/art/dir"
 // }
 
-const metadata = require('music-metadata');
-const fs = require('fs');
-const fe = require('path');
-const crypto = require('crypto');
-
-
+// Parse input JSON
 try{
   var loadJson = JSON.parse(process.argv[process.argv.length-1], 'utf8');
 }catch(error){
@@ -23,58 +18,62 @@ try{
   process.exit();
 }
 
-// console.log(loadJson);
+// Libraries
+const metadata = require('music-metadata');
+const fs = require('fs');
+const fe = require('path');
+const crypto = require('crypto');
 
-const dbRead = require('../db-write/database-default-'+loadJson.dbSettings.type+'.js');
-if(loadJson.dbSettings.type == 'sqlite'){
-  dbRead.setup(loadJson.dbSettings.dbPath);
-}
+// Setup DB layer
+// The DB functions are dcoupled from this so they can easily be swapped out
+const dbRead = require('../db-write/database-default-loki.js');
 
-
-const parseFilesGenerator = rescanAllDirectories(loadJson.userDir);
-parseFilesGenerator.next();
-
-var globalCurrentFileList = {};
-
+// Global Vars
+var globalCurrentFileList = {};  // Map of file paths to metadata
 var listOfFilesToParse = [];
 var listOfFilesToDelete = [];
 
+// Start the generator
+const parseFilesGenerator = rescanAllDirectories(loadJson.userDir);
+parseFilesGenerator.next();
 
-
+// Scan the directory for new, modified, and deleted files
 function *rescanAllDirectories(directoryToScan){
-  // Scan the directory for new, modified, and deleted files
-  yield pullFromDB();
-  // console.log(globalCurrentFileList);
-
-  // Loop through current files
+  yield dbRead.setup(loadJson.dbSettings.dbPath, function(){
+    parseFilesGenerator.next();
+  });
+  // Pull filelist from DB
+  pullFromDB();
+  // Loop through current files and compare them to the files pulled from the DB
   recursiveScan(directoryToScan);
-  //console.log(listOfFilesToParse);
-
+  // Delete Files
   for (var i=0; i < listOfFilesToDelete.length; i++) {
-    yield deleteFile(listOfFilesToDelete[i]);
+    deleteFile(listOfFilesToDelete[i]);
   }
-
+  // Delete all remaining files
+  for (var file in globalCurrentFileList) {
+    deleteFile(file);
+  }
+  // Parse and add files to DB
   for (var i=0; i < listOfFilesToParse.length; i++) {
     yield parseFile(listOfFilesToParse[i]);
   }
 
-
+  yield dbRead.savedb(function(){
+    parseFilesGenerator.next();
+  })
   // Exit
   process.exit(0);
 }
 
+// Get all files form DB and add to globalCurrentFileList
 function pullFromDB(){
   dbRead.getUserFiles(loadJson, function(rows){
-    // console.log(rows);
-
     for(var s of rows){
-      globalCurrentFileList[s.path] = s;
+      globalCurrentFileList[s.filepath] = s;
     }
-
-    parseFilesGenerator.next();
   });
 }
-
 
 
 function recursiveScan(dir, fileTypesArray){
@@ -96,7 +95,6 @@ function recursiveScan(dir, fileTypesArray){
       // Make sure this is in our list of allowed files
       var extension = getFileType(files[i]);
       var fileTypesArray = ["mp3", "flac", "wav", "ogg", "aac", "m4a"];
-
       if (fileTypesArray.indexOf(extension) === -1 ) {
         continue;
       }
@@ -105,12 +103,11 @@ function recursiveScan(dir, fileTypesArray){
       if (!(filepath in globalCurrentFileList)){
         // if not parse new file, add it to DB, and continue
         listOfFilesToParse.push(filepath);
-        // yield parseFile(filepath);
         continue;
       }
 
       // check the file_modified_date
-      if(stat.mtime.getTime() !== globalCurrentFileList[filepath].file_modified_date){
+      if(stat.mtime.getTime() !== globalCurrentFileList[filepath].modified){
         listOfFilesToParse.push(filepath);
         listOfFilesToDelete.push(filepath);
       }
@@ -124,7 +121,6 @@ function recursiveScan(dir, fileTypesArray){
 
 
 function parseFile(thisSong){
-  // console.log(thisSong);
   var filestat = fs.statSync(thisSong);
   if(!filestat.isFile()){
     // TODO: Something is fucky, log it
@@ -166,7 +162,6 @@ function calculateHash (thisSong, songInfo) {
     if (songInfo.picture && songInfo.picture[0]) {
       bufferString = songInfo.picture[0].data.toString('utf8');
       picFormat = songInfo.picture[0].format;
-      // console.log(songInfo.picture);
     } else if (false) { // TODO: Check if there is album art in base folder
 
     }
@@ -202,10 +197,7 @@ function calculateHash (thisSong, songInfo) {
 }
 
 function deleteFile(filepath){
-  dbRead.deleteFile(filepath, loadJson.username, function(){
-    // Re-add entry
-    parseFilesGenerator.next();
-  });
+  dbRead.deleteFile(filepath, loadJson.username, function(){  });
 }
 
 function getFileType(filename){
