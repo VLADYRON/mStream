@@ -1,5 +1,3 @@
-"use strict";
-
 exports.logit = function(msg){
   console.log(msg);
 }
@@ -13,8 +11,6 @@ exports.addresses = {
 exports.bootStatus = false;
 
 exports.serveit = function (program, callback) {
-  // TODO: Verify program variable
-
   const express = require('express');
   const mstream = express();
   const fs = require('fs');  // File System
@@ -51,14 +47,6 @@ exports.serveit = function (program, callback) {
     mstream.get('/', function (req, res) {
     	res.sendFile(  fe.join(program.userinterface, 'mstream.html'), { root: __dirname });
     });
-    // Serve Shared Page
-    mstream.all('/shared/playlist/*', function (req, res) {
-      res.sendFile(  fe.join(program.userinterface, 'shared.html'), { root: __dirname });
-    });
-    // Serve Jukebox Page
-    mstream.all('/remote', function (req, res) {
-      res.sendFile(  fe.join(program.userinterface, 'remote.html'), { root: __dirname });
-    });
   }
   // Setup Album Art
   if(!program.albumArtDir){
@@ -68,40 +56,8 @@ exports.serveit = function (program, callback) {
   mstream.use( '/album-art',  express.static(program.albumArtDir ));
 
   // This is a convenience function. It gets the vPath from any url string
-  program.getVPathInfo = function(url){
-    // remove leading slashes
-    if(url.charAt(0) === '/'){
-      url = url.substr(1);
-    }
-
-    var fileArray = url.split('/');
-    var vpath = fileArray.shift();
-
-    // Make sure the path exists
-    if(!program.folders[vpath]){
-      return false;
-    }
-    var baseDir = program.folders[vpath].root;
-    var newPath = '';
-    for(var dir of fileArray){
-      if(dir === ''){
-        continue;
-      }
-      newPath += dir + '/' ;
-    }
-
-    // TODO: There's gotta be a better way to construct the relative path
-    if(newPath.charAt(newPath.length-1) ===  '/'){
-      newPath = newPath.slice(0, - 1);
-    }
-
-    var fullpath = fe.join( baseDir, newPath)
-    return {
-      vpath: vpath,
-      basePath: baseDir,
-      relativePath: newPath,
-      fullPath: fullpath
-    };
+  program.getVPathInfo = function(path){
+    return fe.join( program.musicDir, path);
   }
 
   // Setup Secret for JWT
@@ -122,12 +78,8 @@ exports.serveit = function (program, callback) {
     }
   }
 
-  // JukeBox
-  const jukebox = require('./modules/jukebox.js');
-  jukebox.setup2(mstream, server, program);
-  // Shared
-  const sharedModule = require('./modules/shared.js');
-  sharedModule.setupBeforeSecurity(mstream, program);
+  // Setup all folders with express static
+  mstream.use( '/media/' + key + '/' , express.static(  program.musicDir  ));
 
   // Login functionality
   program.auth = false;
@@ -137,20 +89,9 @@ exports.serveit = function (program, callback) {
   }else{
     program.users = {
       "mstream-user":{
-        vpaths: [],
         username: "mstream-user",
         admin: true
       }
-    }
-
-    if(program['lastfm-user'] && program['lastfm-password']){
-      program.users['mstream-user']['lastfm-user'] = program['lastfm-user']
-      program.users['mstream-user']['lastfm-password'] = program['lastfm-password']
-    }
-
-    // Fill iin user vpaths
-    for (var key in program.folders) {
-      program.users['mstream-user'].vpaths.push(key);
     }
 
     // Fill in the necessary middleware
@@ -160,17 +101,9 @@ exports.serveit = function (program, callback) {
     });
   }
 
-  // Setup all folders with express static
-  for (var key in program.folders) {
-    mstream.use( '/media/' + key + '/' , express.static(  program.folders[key].root  ));
-  }
-
   // Used to determine the user has a working login token
-  mstream.get('/ping', function(req, res){
-    res.json({
-      vpaths: req.user.vpaths,
-      guest: false
-    });
+  mstream.get('/ping', (req, res) => {
+    res.json({ success: true });
   });
 
   // Download Files Call
@@ -180,34 +113,15 @@ exports.serveit = function (program, callback) {
   // Load database plugin system
   require('./modules/db-management/database-master.js').setup(mstream, program);
 
-  // Finish setting up the jukebox and shared
-  jukebox.setup(mstream, server, program);
-  sharedModule.setupAfterSecurity(mstream, program);
-
-  // TODO: Add individual song
-  // mstream.get('/db/add-songs', function(req, res){
-  //   res.status(500).json( {error: 'Coming Soon'} );
-  // });
-
-  // Scrobbler
-  require('./modules/scrobbler.js').setup(mstream, program);
 
   // Start the server!
   // TODO: Check if port is in use before firing up server
   server.on('request', mstream);
   server.listen(program.port, function () {
-    console.log('Donate to our Patreon: https://www.patreon.com/mstream')
     exports.bootStatus = true;
-
     let protocol = program.ssl && program.ssl.cert && program.ssl.key ? 'https' : 'http';
-
     exports.addresses.local = protocol + '://localhost:' + program.port;
     exports.logit('Access mStream locally: ' + exports.addresses.local);
-
-    require('internal-ip').v4().then(ip => {
-      exports.addresses.network = protocol + '://' +  ip + ':' + program.port;
-      exports.logit('Access mStream on your local network: ' + exports.addresses.network);
-    });
 
     // Handle Port Forwarding
     if(program.tunnel){

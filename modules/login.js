@@ -18,32 +18,6 @@ exports.setup = function(mstream, program, express){
 
   // TODO: Need a way to store and use already hashed passwords
 
-  // TODO: Add/delete user functionality
-  // TODO: password change function
-
-  // mstream.post('/change-password-request', function (req, res) {
-  //   // Get email address from request
-  //     // validate email against user array
-  //   // Generate change password token
-  //   // Invalidate all other change password tokens
-  //   // Email the user the token
-  //   res.status(500).json( {error: 'Coming Soon'} );
-  // });
-  // mstream.post('/change-password', function (req, res){
-  //   // Check token
-  //   // Get new password
-  //   // Hash password and update user array
-  //   res.status(500).json( {error: 'Coming Soon'} );
-  // });
-  // mstream.post('/sunset-user', function(req,res){
-  //   // Removes all user info
-  //   res.status(500).json( {error: 'Coming Soon'} );
-  // });
-  // mstream.post('/add-user', function(req,res){
-  //   // Add a user
-  //   res.status(500).json( {error: 'Coming Soon'} );
-  // });
-
   // Loop through users and setup passwords
   for (let username in Users) {
     generateSaltedPassword(username, Users[username]["password"]);
@@ -102,12 +76,9 @@ exports.setup = function(mstream, program, express){
       }
 
       // return the information including token as JSON
-      res.json(
-        {
-          vpaths: Users[username].vpaths,
-          token: jwt.sign({username: username}, program.secret) // Make the token
-        }
-      );
+      res.json({
+        token: jwt.sign({username: username}, program.secret) // Make the token
+      });
     });
   });
 

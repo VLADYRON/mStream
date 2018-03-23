@@ -1,9 +1,7 @@
 exports.setup = function(mstream, program){
-  const archiver = require('archiver');  // Zip Compression
+  const archiver = require('archiver');
   const fe = require('path');
 
-
-  // Download a zip file of music
   mstream.post('/download',  function (req, res){
     var archive = archiver('zip');
 

@@ -35,27 +35,6 @@ exports.setup = function(mstream, program){
   });
 
 
-  // TODO: Is this still necessary???
-  // mstream.get('/db/download-db', function(req, res){
-  //   // Download File
-  //   res.download(req.user.privateDBOptions.importDB);
-  // });
-  // // Get hash of database
-  // mstream.get( '/db/hash', function(req, res){
-  //   var hash = crypto.createHash('sha256');
-  //   hash.setEncoding('hex');
-  //
-  //   var fileStream = fs.createReadStream(req.user.privateDBOptions.importDB);
-  //   fileStream.on('end', function () {
-  //     hash.end();
-  //     res.json( {hash:String(hash.read())} );
-  //   });
-  //
-  //   fileStream.pipe(hash, { end: false });
-  // });
-
-
-
   // Scan library
   mstream.get('/db/recursive-scan', function(req,res){
     var scan = runScan();
